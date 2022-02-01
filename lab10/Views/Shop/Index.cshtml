@@ -1,0 +1,107 @@
+@model IEnumerable<lab10.Models.Article>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script>
+        window.onscroll = function(ev) {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                loadArticles();
+            }
+        };
+        setInterval(function() {
+            if(end_of_data){
+                $('#end_of_data_div').css('visibility', 'visible');
+                $('#loading_div').css('visibility', 'hidden');
+            } else {
+                $('#end_of_data_div').css('visibility', 'hidden');
+                if(loadArticles){
+                    $('#loading_div').css('visibility', 'visible');
+                } else {
+                    $('#loading_div').css('visibility', 'hidden');
+                }
+            }
+        }, 100);
+    </script>
+}
+
+
+<h4>Shop</h4>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form method="get">
+                <div class="form-group row">
+                    <label name="CategoryId" class="col-md-4 control-label">Category</label>
+                    <div class="col-md-8">
+                        <select name="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId" onchange="document.getElementsByTagName('form')[0].submit();">
+                            <option selected>All</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8">
+            <a class="btn btn-light float-right" asp-area="" asp-controller="Shop" asp-action="Cart">Cart</a>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Money)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                Image
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="articles_table_body">
+@foreach (var item in Model) {
+        <tr>
+            <td class="article_id" hidden>@item.ArticleId</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Money)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @if(item.ImageName is null){
+                    <img height="100px" src="~/image/placeholder.jpg" />
+
+                }else{
+                    <img height="100px" src="~/upload/@item.ImageName" />
+                }
+            </td>
+            <td><button class="btn btn-light" onclick="setProductQuantity(parseInt(@item.ArticleId), getProductQuantity(parseInt(@item.ArticleId)) + 1)">Add to cart</button></td>
+        </tr>
+}
+    </tbody>
+</table>
+<div class="text-center" id="loading_div">
+    <div class="spinner-border my-auto" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<div id="end_of_data_div" class="card">
+  <div class="card-body">No more articles</div>
+</div>
+
+

@@ -1,0 +1,140 @@
+@model lab10.Models.Order
+
+
+<form asp-action="Order" method="post">
+    <div class="container">
+        <div class="row">
+            <h4>Order</h4>  
+            <table id="cart_table" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Money
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Image
+                        </th>
+                        <th>
+                            Quantity
+                        </th>
+                        <th>
+                            Cost
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="cart_rows">
+            @foreach (var (item, i) in Model.CartItems.Select((value,i) => (value, i))) {
+                <input asp-for="CartItems[i].Quantity" type="hidden"/>
+                <input asp-for="CartItems[i].Article.ArticleId" type="hidden"/>
+                <input asp-for="CartItems[i].Article.Name" type="hidden"/>
+                <input asp-for="CartItems[i].Article.ImageName" type="hidden"/>
+                <input asp-for="CartItems[i].Article.Money" type="hidden"/>
+                <input asp-for="CartItems[i].Article.Category.Name" type="hidden"/>
+                <input asp-for="CartItems[i].Article.Category.CategoryID" type="hidden"/>
+                <tr id="@(item.Article.ArticleId)_row">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Article.Name)
+                    </td>
+                    <td id="@(item.Article.ArticleId)_money">
+                        @Html.DisplayFor(modelItem => item.Article.Money)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Article.Category.Name)
+                    </td>
+                    <td>
+                        @if(item.Article.ImageName is null){
+                            <img height="100px" src="~/image/placeholder.jpg" />
+
+                        }else{
+                            <img height="100px" src="~/upload/@item.Article.ImageName" />
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                    </td>
+                    <td>
+                        @(item.Quantity * item.Article.Money)
+                    </td>
+                </tr>
+            }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="5">
+                            <b>Sum cost</b>
+                        </th>
+                        <th>
+                            @(Model.CartItems.Select(item => item.Quantity * item.Article.Money).Aggregate(new Decimal(0.0), (acc, cost) => acc + cost))
+                        </th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Person</h4>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Person.FirstName" class="control-label"></label>
+                    <input asp-for="Person.FirstName" class="form-control" />
+                    <span asp-validation-for="Person.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Person.LastName" class="control-label"></label>
+                    <input asp-for="Person.LastName" class="form-control" />
+                    <span asp-validation-for="Person.LastName" class="text-danger"></span>
+                </div>
+                <h4>Payment</h4>
+                <div class="form-group">
+                    <label asp-for="PaymentMethod" class="control-label"></label>
+                    <select asp-for="PaymentMethod" class="form-control">
+                        <option value="0">Bank transfer</option>
+                        <option value="1">Cash on delivery</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>Address</h4>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Address.City" class="control-label"></label>
+                    <input asp-for="Address.City" class="form-control" />
+                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Address.Postcode" class="control-label"></label>
+                    <input asp-for="Address.Postcode" class="form-control" />
+                    <span asp-validation-for="Address.Postcode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Address.Street" class="control-label"></label>
+                    <input asp-for="Address.Street" class="form-control" />
+                    <span asp-validation-for="Address.Street" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Address.HouseNumber" class="control-label"></label>
+                    <input asp-for="Address.HouseNumber" class="form-control" />
+                    <span asp-validation-for="Address.HouseNumber" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a class="btn btn-light" asp-area="" asp-controller="Shop" asp-action="Cart">Back to Cart</a>
+            </div>
+            <div class="col-md-6">
+                <input type="submit" value="Confirm Order" class="btn btn-light float-right" />
+            </div>
+        </div>
+    </div>
+</form>
